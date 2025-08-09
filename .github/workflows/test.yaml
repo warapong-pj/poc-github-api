@@ -3,6 +3,9 @@ name: CI Pipeline
 on:
   push: {}
 
+  workflow_dispatch:
+    inputs: {}
+
 jobs:
   build:
     runs-on: ubuntu-latest
