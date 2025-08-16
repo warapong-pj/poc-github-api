@@ -4,7 +4,28 @@ on:
   push: {}
 
   workflow_dispatch:
-    inputs: {}
+    inputs:
+      jira-key:
+        description: 'Jira key'
+        required: true
+        type: string
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - qa
+          - prd
+      service:
+        description: 'Service name'
+        required: true
+        type: string
+      tag:
+        description: 'Deployment tag'
+        required: true
+        type: string
 
 jobs:
   build:
