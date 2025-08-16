@@ -1,8 +1,6 @@
-name: CI Pipeline
+name: Example Workflow
 
 on:
-  push: {}
-
   workflow_dispatch:
     inputs:
       jira-key:
