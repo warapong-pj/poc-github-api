@@ -32,3 +32,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Print inputs
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          echo ${{ inputs.jira-key }}
+          echo ${{ inputs.environment }}
+          echo ${{ inputs.service }}
+          echo ${{ inputs.tag }}
