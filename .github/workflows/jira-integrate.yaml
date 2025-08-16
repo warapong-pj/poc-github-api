@@ -1,0 +1,169 @@
+name: Example Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      jira-key:
+        description: 'Jira key'
+        required: true
+        type: string
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - qa
+          - prd
+      service:
+        description: 'Service name'
+        required: true
+        type: string
+      tag:
+        description: 'Deployment tag'
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Print inputs
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          echo ${{ inputs.jira-key }}
+          echo ${{ inputs.environment }}
+          echo ${{ inputs.service }}
+          echo ${{ inputs.tag }}
+
+      - name: Comment Jira issue if success
+        if: success()
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          cat <<EOF > data.json
+          {
+            "body": {
+              "content": [
+                {
+                  "content": [
+                    {
+                      "text": "comment pipeline success from GitHub Actions\n",
+                      "type": "text"
+                    },
+                    {
+                        "text": "link GitHub Actions",
+                        "type": "text",
+                        "marks": [
+                            {
+                            "type": "link",
+                                "attrs": {
+                                    "href": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                                    "title": "GitHub Actions"
+                                }
+                            }
+                        ]
+                    }
+                  ],
+                  "type": "paragraph"
+                }
+              ],
+              "type": "doc",
+              "version": 1
+            }
+          }
+          EOF
+
+          curl --request POST \
+            --url 'https://${{ secrets.JIRA_URL }}/rest/api/3/issue/${{ inputs.jira-key }}/comment' \
+            --user 'warapong.pj@gmail.com:${{ secrets.JIRA_TOKEN }}' \
+            --header 'Accept: application/json' \
+            --header 'Content-Type: application/json' \
+            --data @data.json
+
+          cat <<EOF > data.json
+          {
+              "transition": {
+                  "id": "7"
+              }
+          }
+          EOF
+
+          curl --request POST \
+            --url 'https://${{ secrets.JIRA_URL }}/rest/api/3/issue/${{ inputs.jira-key }}/transitions' \
+            --user 'warapong.pj@gmail.com:${{ secrets.JIRA_TOKEN }}' \
+            --header 'Accept: application/json' \
+            --header 'Content-Type: application/json' \
+            --data @data.json
+
+      - name: Comment Jira issue if failure
+        if: failure()
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          cat <<EOF > data.json
+          {
+            "body": {
+              "content": [
+                {
+                  "content": [
+                    {
+                      "text": "comment pipeline failure from GitHub Actions\n",
+                      "type": "text"
+                    },
+                    {
+                        "text": "link GitHub Actions",
+                        "type": "text",
+                        "marks": [
+                            {
+                            "type": "link",
+                                "attrs": {
+                                    "href": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                                    "title": "GitHub Actions"
+                                }
+                            }
+                        ]
+                    }
+                  ],
+                  "type": "paragraph"
+                }
+              ],
+              "type": "doc",
+              "version": 1
+            }
+          }
+          EOF
+
+          curl --request POST \
+            --url 'https://${{ secrets.JIRA_URL }}/rest/api/3/issue/${{ inputs.jira-key }}/comment' \
+            --user 'warapong.pj@gmail.com:${{ secrets.JIRA_TOKEN }}' \
+            --header 'Accept: application/json' \
+            --header 'Content-Type: application/json' \
+            --data @data.json
+
+          cat <<EOF > data.json
+          {
+              "transition": {
+                  "id": "9"
+              }
+          }
+          EOF
+
+          curl --request POST \
+            --url 'https://${{ secrets.JIRA_URL }}/rest/api/3/issue/${{ inputs.jira-key }}/transitions' \
+            --user 'warapong.pj@gmail.com:${{ secrets.JIRA_TOKEN }}' \
+            --header 'Accept: application/json' \
+            --header 'Content-Type: application/json' \
+            --data @data.json
