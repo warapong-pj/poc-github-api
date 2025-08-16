@@ -44,14 +44,21 @@ jobs:
           echo ${{ inputs.service }}
           echo ${{ inputs.tag }}
 
-          cat <<EOF >> request.json
+      - name: Comment Jira issue if success
+        if: success()
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          cat <<EOF > data.json
           {
             "body": {
               "content": [
                 {
                   "content": [
                     {
-                      "text": "comment from GitHub Actions",
+                      "text": "comment pipeline success from GitHub Actions",
                       "type": "text"
                     }
                   ],
@@ -69,4 +76,68 @@ jobs:
             --user 'warapong.pj@gmail.com:${{ secrets.JIRA_TOKEN }}' \
             --header 'Accept: application/json' \
             --header 'Content-Type: application/json' \
-            --data @request.json
+            --data @data.json
+
+          cat <<EOF > data.json
+          {
+              "transition": {
+                  "id": "7"
+              }
+          }
+          EOF
+
+          curl --request POST \
+            --url 'https://top-cat6.atlassian.net/rest/api/3/issue/${{ inputs.jira-key }}/transitions' \
+            --user 'warapong.pj@gmail.com:${{ secrets.JIRA_TOKEN }}' \
+            --header 'Accept: application/json' \
+            --header 'Content-Type: application/json' \
+            --data @data.json
+
+      - name: Comment Jira issue if failure
+        if: failure()
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          cat <<EOF > data.json
+          {
+            "body": {
+              "content": [
+                {
+                  "content": [
+                    {
+                      "text": "comment pipeline failure from GitHub Actions",
+                      "type": "text"
+                    }
+                  ],
+                  "type": "paragraph"
+                }
+              ],
+              "type": "doc",
+              "version": 1
+            }
+          }
+          EOF
+
+          curl --request POST \
+            --url 'https://top-cat6.atlassian.net/rest/api/3/issue/${{ inputs.jira-key }}/comment' \
+            --user 'warapong.pj@gmail.com:${{ secrets.JIRA_TOKEN }}' \
+            --header 'Accept: application/json' \
+            --header 'Content-Type: application/json' \
+            --data @data.json
+
+          cat <<EOF > data.json
+          {
+              "transition": {
+                  "id": "9"
+              }
+          }
+          EOF
+
+          curl --request POST \
+            --url 'https://top-cat6.atlassian.net/rest/api/3/issue/${{ inputs.jira-key }}/transitions' \
+            --user 'warapong.pj@gmail.com:${{ secrets.JIRA_TOKEN }}' \
+            --header 'Accept: application/json' \
+            --header 'Content-Type: application/json' \
+            --data @data.json
