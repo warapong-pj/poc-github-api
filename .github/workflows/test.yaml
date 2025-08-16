@@ -2,53 +2,12 @@ name: Example Workflow
 
 on:
   workflow_dispatch:
-    inputs:
-      jira-key:
-        description: 'Jira key'
-        required: true
-        type: string
-      environment:
-        description: 'Deployment environment'
-        required: true
-        default: 'dev'
-        type: choice
-        options:
-          - dev
-          - qa
-          - prd
-      service:
-        description: 'Service name'
-        required: true
-        type: string
-      tag:
-        description: 'Deployment tag'
-        required: true
-        type: string
+    inputs: {}
 
 jobs:
-  build:
+  check_quality:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Print inputs
-        run: |
-          #!/bin/sh
-
-          set -e
-
-          echo ${{ inputs.jira-key }}
-          echo ${{ inputs.environment }}
-          echo ${{ inputs.service }}
-          echo ${{ inputs.tag }}
-
-      - name: Create new branch
-        run: |
-          #!/bin/sh
-
-          set -e
-
-          git checkout -b ${{ inputs.environment }}
-          git branch

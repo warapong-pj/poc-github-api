@@ -1,0 +1,106 @@
+name: Example Workflow
+
+on:
+  workflow_dispatch:
+    inputs: {}
+
+jobs:
+  check_quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: SAST
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          echo "SAST scan"
+
+      - name: SCA
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          echo "SCA scan"
+
+      - name: Policy as Code
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          echo "Check policy as code"
+
+  build_and_push:
+    needs: check_quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          echo "Build container image"
+
+      - name: Push
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          echo "Push container image"
+
+  check_vulnerability:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SBOM
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          echo "SBOM"
+
+  deployment:
+    needs: check_vulnerability
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Update Kubernetes manifest
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          echo "Update Kubernetes manifest"
+
+      - name: Policy as Code
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          echo "Check policy as code"
+
+      - name: Deploy
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          echo "Deployment"
