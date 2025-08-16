@@ -43,3 +43,30 @@ jobs:
           echo ${{ inputs.environment }}
           echo ${{ inputs.service }}
           echo ${{ inputs.tag }}
+
+          cat <<EOF >> request.json
+          {
+            "body": {
+              "content": [
+                {
+                  "content": [
+                    {
+                      "text": "comment from GitHub Actions",
+                      "type": "text"
+                    }
+                  ],
+                  "type": "paragraph"
+                }
+              ],
+              "type": "doc",
+              "version": 1
+            }
+          }
+          EOF
+
+          curl --request POST \
+            --url 'https://top-cat6.atlassian.net/rest/api/3/issue/${{ inputs.jira-key }}/comment' \
+            --user 'warapong.pj@gmail.com:${{ secrets.JIRA_TOKEN }}' \
+            --header 'Accept: application/json' \
+            --header 'Content-Type: application/json' \
+            --data @request.json
