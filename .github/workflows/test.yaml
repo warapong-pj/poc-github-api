@@ -11,3 +11,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Update packages
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          echo "Update packages"
