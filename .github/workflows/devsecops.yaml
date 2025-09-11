@@ -28,14 +28,6 @@ jobs:
 
           echo "SCA scan"
 
-      - name: Policy as Code
-        run: |
-          #!/bin/sh
-
-          set -e
-
-          echo "Check policy as code"
-
   build_and_push:
     needs: check_quality
     runs-on: ubuntu-latest
@@ -43,6 +35,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Policy as Code
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          echo "Check policy as code"
 
       - name: Build
         run: |
@@ -71,7 +71,15 @@ jobs:
 
           set -e
 
-          echo "SBOM"
+          echo "SBOM scan"
+
+      - name: DAST
+        run: |
+          #!/bin/sh
+
+          set -e
+
+          echo "DAST scan"
 
   deployment:
     needs: check_vulnerability
